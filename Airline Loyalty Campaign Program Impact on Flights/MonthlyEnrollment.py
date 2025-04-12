@@ -54,7 +54,6 @@ enrollmentPromotion2018 = dataLoyalty[(dataLoyalty["Enrollment Type"].str.contai
 #.shape retorna uma tupa com o número de linhas e colunas, usamos [0] para utilizar somente a primeira informação
 enrollmentPromotion2018Count = enrollmentPromotion2018.shape[0]
 
-print(enrollmentPromotion2018Count)
 #Números de reservas canceladas durante o período de promoçoes
 #isin() : Whether elements in Series are contained in values.
 cancellPromotions2018 = dataLoyalty[(dataLoyalty['Cancellation Year'] == 2018) & (dataLoyalty['Cancellation Month'].isin([2,3,4]))]
@@ -63,17 +62,21 @@ cancellPromotions2018 = dataLoyalty[(dataLoyalty['Cancellation Year'] == 2018) &
 cancellPromotions2018Count = len(cancellPromotions2018)
 
 #Outputs
-print(f"Inscrições na promoção: {enrollmentPromotion2018Count}")
-print(f"Cancelamentos na promoção: {cancellPromotions2018Count}")
-print(f"Somatório na promoção: {enrollmentPromotion2018Count-cancellPromotions2018Count}")
-
-#Puxando o período de 2017 e 2018
-enrollmentTimeSlice = dataLoyalty[(dataLoyalty['Enrollment Year'] >= 2017) & (dataLoyalty['Enrollment Year'] <= 2018)]
+# print(f"Inscrições na promoção: {enrollmentPromotion2018Count}")
+# print(f"Cancelamentos na promoção: {cancellPromotions2018Count}")
+# print(f"Somatório na promoção: {enrollmentPromotion2018Count-cancellPromotions2018Count}")
 
 #agrupamento por Mês e por ano, onde criando a estrutura {Enrollmente Year : Enrollment Month}
 #.size(): Number of rows in each group as a Series if as_index is True or a DataFrame if as_index is False.
 #.reset_index(): This is useful when the index needs to be treated as a column, or when the index is meaningless and needs to be reset to the default before another operation.
-enrollmentByMonthCount = enrollmentTimeSlice.groupby(['Enrollment Year', 'Enrollment Month']).size().reset_index(name='Count')
+userInput = input("Selecione qual faixa de tempo deseja visualizar T para TODOS e P para PROMOÇÃO:")
+
+if (userInput == 'T' or userInput== 't'):
+    enrollmentByMonthCount = dataLoyalty.groupby(['Enrollment Year', 'Enrollment Month']).size().reset_index(name='Count')
+elif (userInput == 'P' or userInput == 'p'):
+    #Puxando o período de 2017 e 2018
+    enrollmentTimeSlice = dataLoyalty[(dataLoyalty['Enrollment Year'] >= 2017) & (dataLoyalty['Enrollment Year'] <= 2018)]
+    enrollmentByMonthCount = enrollmentTimeSlice.groupby(['Enrollment Year', 'Enrollment Month']).size().reset_index(name='Count')
 
 #Sinalizando quais meses do período escolhido são de promoção e quais não
 enrollmentByMonthCount['Promotion Enrollment'] = np.where(
